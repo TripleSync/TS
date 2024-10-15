@@ -8,8 +8,7 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <h1 className="">dddd</h1>
-      <div>ddddd</div>
+      <h1 className="text-primary">dddd</h1>
     </QueryClientProvider>
   </StrictMode>
 );
