@@ -1,12 +1,6 @@
-import { User } from "../../types/user";
+import { Chat } from "../../types/chat";
 
 export type ChatStoreType = {
   chatList: Chat[];
   setChatList: (data: Chat) => void;
-};
-
-export type Chat = {
-  user: User;
-  text: string;
-  time: Date;
 };
