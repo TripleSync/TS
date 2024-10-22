@@ -1,10 +1,10 @@
+import profile from "@assets/user1.svg";
+import type { Chat } from "@customTypes/chat";
+import { User } from "@customTypes/user";
+import { formatTime } from "@utils/date";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { useChatStore } from "../../store/actions/useChatStore";
-import type { Chat } from "../../types/chat";
-import { User } from "../../types/user";
-import { formatTime } from "../../utils/date";
-import profil from "../assets/user1.svg";
+import { useChatStore } from "store/actions/useChatStore";
 
 const socket = io("localhost:5000");
 
@@ -15,7 +15,7 @@ const Chat = () => {
   const setChatList = useChatStore((state) => state.setChatList);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
-  const user: User = { userName: userName, profileUrl: profil };
+  const user: User = { userName: userName, profileUrl: profile };
 
   useEffect(() => {
     const handleMessage = (message: Chat) => {
