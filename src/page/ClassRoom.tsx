@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoChatboxOutline } from "react-icons/io5";
-import Chat from "../components/Chat";
+import Chat from "../components/ClassRoom/Chat";
 
 const ClassRoom = () => {
   const [isChat, setIsChat] = useState(false);
