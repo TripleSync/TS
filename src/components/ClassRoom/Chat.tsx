@@ -44,12 +44,12 @@ const Chat = () => {
 
   return (
     <>
-      <div className="flex flex-col overflow-y-auto max-h-[950px] h-screen w-[450px]">
-        <div className="flex justify-center mt-4">
-          <span className="text-center w-1/2 bg-primary rounded">{"채팅하기"}</span>
+      <div className="flex h-screen max-h-[950px] w-[450px] flex-col overflow-y-auto">
+        <div className="mt-4 flex justify-center">
+          <span className="w-1/2 rounded bg-primary text-center">{"채팅하기"}</span>
         </div>
-        <div className="w-1/2 text-center mt-4">
-          <span className="text-primary ">이름</span>
+        <div className="mt-4 w-1/2 text-center">
+          <span className="text-primary">이름</span>
           <input type="text" onChange={(e) => setUserName(e.target.value)} />
         </div>
         <div>
@@ -62,7 +62,7 @@ const Chat = () => {
                   className={`mb-2 flex items-center ${
                     chat.user.userName === userName ? "flex-row-reverse text-right" : ""
                   }`}>
-                  <img className="w-12 h-12 inline-block" src={chat.user.profileUrl} alt="profile" />
+                  <img className="inline-block h-12 w-12" src={chat.user.profileUrl} alt="profile" />
                   <div>
                     <span>{chat.user.userName}</span>
                     <br />
@@ -71,7 +71,7 @@ const Chat = () => {
                         {line}
                       </span>
                     ))}
-                    <span className="text-xs text-gray-500 ml-1 mr-1">{formatTime(chat.time)}</span>
+                    <span className="ml-1 mr-1 text-xs text-gray-500">{formatTime(chat.time)}</span>
                   </div>
                 </li>
               );
@@ -79,15 +79,15 @@ const Chat = () => {
             <div className="h-14" ref={chatEndRef} />
           </ul>
         </div>
-        <div className="fixed bottom-0 left-0 w-[450px] bg-white p-4 flex shadow-md">
+        <div className="fixed bottom-0 left-0 flex w-[450px] bg-white p-4 shadow-md">
           <input
-            className="flex-grow mr-4 p-2 border border-gray-300 rounded"
+            className="mr-4 flex-grow rounded border border-gray-300 p-2"
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
-          <button className="bg-secondary text-dark py-2 px-4 rounded" onClick={sendMessage}>
+          <button className="rounded bg-secondary px-4 py-2 text-dark" onClick={sendMessage}>
             전송
           </button>
         </div>
