@@ -2,6 +2,7 @@ import profile from "@assets/user1.svg";
 import type { Chat } from "@customTypes/chat";
 import { User } from "@customTypes/user";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { IoChatboxOutline } from "react-icons/io5";
 import { io } from "socket.io-client";
 import { useChatStore } from "store/actions/useChatStore";
 import ChatInput from "./ChatInput";
@@ -11,6 +12,7 @@ const socket = io("localhost:5000");
 
 const Chat = () => {
   const [userName, setUserName] = useState("user1");
+  const [isChat, setIsChat] = useState(false);
   const chatList = useChatStore((state) => state.chatList);
   const setChatList = useChatStore((state) => state.setChatList);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -44,57 +46,32 @@ const Chat = () => {
 
   return (
     <>
-      <div className="flex h-screen max-h-[950px] w-[450px] flex-col overflow-y-auto">
-        <div className="mt-4 flex justify-center">
-          <span className="w-1/2 rounded bg-primary text-center">{"채팅하기"}</span>
+      <section
+        className={`fixed bottom-0 right-0 transition-transform duration-300 ${
+          isChat ? "translate-x-0" : "translate-x-full"
+        }`}>
+        <div className="flex h-screen max-h-[865px] w-[450px] flex-col overflow-y-auto">
+          <div className="mt-4 flex justify-center">
+            <span className="w-1/2 rounded bg-primary text-center">{"채팅하기"}</span>
+          </div>
+          <div className="mt-4 w-1/2 text-center">
+            <span className="text-primary">이름</span>
+            <input type="text" onChange={(e) => setUserName(e.target.value)} />
+          </div>
+          <div>
+            <ul className="flex-grow p-4">
+              {chatList.map((chat, index) => (
+                <ChatMessage key={index} chat={chat} userName={userName} />
+              ))}
+              <div className="h-14" ref={chatEndRef} />
+            </ul>
+          </div>
+          <ChatInput sendMessage={sendMessage} />
         </div>
-        <div className="mt-4 w-1/2 text-center">
-          <span className="text-primary">이름</span>
-          <input type="text" onChange={(e) => setUserName(e.target.value)} />
-        </div>
-        <div>
-          <ul className="flex-grow p-4">
-            {chatList.map((chat, index) => (
-              <ChatMessage key={index} chat={chat} userName={userName} />
-            ))}
-            {chatList.map((chat, index) => {
-              const textLines = chat.text.match(/.{1,20}/g) || [];
-              return (
-                <li
-                  key={index}
-                  className={`mb-2 flex items-center ${
-                    chat.user.userName === userName ? "flex-row-reverse text-right" : ""
-                  }`}>
-                  <img className="inline-block h-12 w-12" src={chat.user.profileUrl} alt="profile" />
-                  <div>
-                    <span>{chat.user.userName}</span>
-                    <br />
-                    {textLines.map((line, idx) => (
-                      <span key={idx} className="block">
-                        {line}
-                      </span>
-                    ))}
-                    <span className="ml-1 mr-1 text-xs text-gray-500">{formatTime(chat.time)}</span>
-                  </div>
-                </li>
-              );
-            })}
-            <div className="h-14" ref={chatEndRef} />
-          </ul>
-        </div>
-        <div className="fixed bottom-0 left-0 w-[450px] bg-white p-4 flex shadow-md">
-          <input
-            className="flex-grow mr-4 p-2 border border-gray-300 rounded"
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
-          <button className="bg-secondary text-dark py-2 px-4 rounded" onClick={sendMessage}>
-            전송
-          </button>
-        </div>
-      </div>
+      </section>
+      <button className="fixed bottom-2 right-0" onClick={() => setIsChat((prev) => !prev)}>
+        <IoChatboxOutline fontSize={"1.5em"} />
+      </button>
     </>
   );
 };

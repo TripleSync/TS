@@ -10,15 +10,15 @@ const ChatInput = ({ sendMessage }: { sendMessage: (text: string) => void }) => 
     }
   };
   return (
-    <div className="fixed bottom-0 left-0 w-[450px] bg-white p-4 flex shadow-md">
+    <div className="fixed bottom-0 left-0 flex w-[450px] bg-white p-4 shadow-md">
       <input
-        className="flex-grow mr-4 p-2 border border-gray-300 rounded"
+        className="mr-4 flex-grow rounded border border-gray-300 p-2"
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && sendText()}
       />
-      <button className="bg-secondary text-dark py-2 px-4 rounded" onClick={sendText}>
+      <button className="rounded bg-secondary px-4 py-2 text-dark" onClick={sendText}>
         전송
       </button>
     </div>
