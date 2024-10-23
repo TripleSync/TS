@@ -10,6 +10,9 @@ export default {
       },
     },
   },
+  corePlugins: {
+    preflight: true,
+  },
   plugins: [require("@tailwindcss/forms")],
   future: {
     hoverOnlyWhenSupported: true,
