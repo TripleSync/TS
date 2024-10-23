@@ -8,11 +8,11 @@ const Router = createBrowserRouter([
     element: <BasicLayout />,
     children: [
       {
-        path: "/",
+        index: true,
         element: <Home />,
       },
       {
-        path: "/classroom",
+        path: "classroom",
         element: <ClassRoom />,
       },
     ],
