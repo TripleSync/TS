@@ -1,23 +1,16 @@
-import Chat from "@components/ClassRoom/Chat";
 import Drawing from "@components/ClassRoom/Drawing";
-import { useState } from "react";
-import { IoChatboxOutline } from "react-icons/io5";
 
 const ClassRoom = () => {
-  const [isChat, setIsChat] = useState(false);
   return (
-    <>
-      <Drawing />
-      <div
-        className={`fixed right-0 bottom-0 transition-transform duration-300 ${
-          isChat ? "translate-x-0" : "translate-x-full"
-        }`}>
-        <Chat />
-      </div>
-      <button className="fixed right-0 bottom-2" onClick={() => setIsChat((prev) => !prev)}>
-        <IoChatboxOutline fontSize={"1.5em"} />
-      </button>
-    </>
+    <main className="flex h-full w-full flex-row">
+      <Drawing/>
+      {/* 
+      section은 각 기능의 컴포넌트에서 감싸주세요!
+      아래 컴포넌트에 대체한 뒤에 주석 삭제하기 
+      <section>video</section>
+      <section>chat </section> 
+      */}
+    </main>
   );
 };
 export default ClassRoom;
