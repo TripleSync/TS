@@ -6,10 +6,10 @@ const COLORSET: BrushColor[] = ["black", "red", "blue"];
 
 const Tool = ({ onClear }: { onClear: () => void }) => {
   const setTool = useDrawingStore((state) => state.setTool);
-  const ulStyle = "flex gap-1";
+  const ulStyle = "flex gap-2";
 
   return (
-    <div id="tool" className="flex justify-center items-center gap-8 mb-1">
+    <div id="tool" className="mb-1 flex items-center justify-center gap-8">
       <ul id="tool" className={ulStyle}>
         <li>
           <FaPen onClick={() => setTool("pen")} />

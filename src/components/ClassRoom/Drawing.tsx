@@ -57,16 +57,14 @@ const Drawing = () => {
   };
 
   return (
-    <section
-      id="container"
-      className=" w-fit h-fit bg-primary p-5 flex items-center justify-center border rounded-sm border-b">
-      <div id="board" className="flex flex-col">
+    <section id="container" className="flex h-full w-max items-center justify-center">
+      <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
         <Tool onClear={handleClearCanvas} />
         <Stage
           id="canvas"
-          className="bg-white"
-          width={window.innerWidth * 0.5}
-          height={window.innerHeight * 0.5}
+          className="rounded-xl bg-white"
+          width={750}
+          height={550}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>

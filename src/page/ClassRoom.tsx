@@ -3,7 +3,6 @@ import Drawing from "@components/ClassRoom/Drawing";
 const ClassRoom = () => {
   return (
     <>
-      classRoom
       <Drawing />
       {/* 
       section은 각 기능의 컴포넌트에서 감싸주세요!
