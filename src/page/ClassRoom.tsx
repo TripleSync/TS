@@ -2,7 +2,7 @@ import Chat from "@components/ClassRoom/Chat";
 
 const ClassRoom = () => {
   return (
-    <main className="flex h-full w-full flex-row">
+    <>
       classRoom
       {/* 
       section은 각 기능의 컴포넌트에서 감싸주세요!
@@ -10,8 +10,8 @@ const ClassRoom = () => {
       <section>drawing</section>
       <section>video</section>
       */}
-      <Chat />
-    </main>
+
+    </>
   );
 };
 export default ClassRoom;
