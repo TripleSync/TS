@@ -1,8 +1,9 @@
 import Tool from "@components/ClassRoom/Drawing/Tool";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layer, Line, Stage } from "react-konva";
+import { io, Socket } from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 
 type TLine = {
@@ -11,6 +12,8 @@ type TLine = {
   brushColor: string;
 };
 
+const socket: Socket = io("http://localhost:5000");
+
 const Drawing = () => {
   const tool = useDrawingStore((state) => state.tool);
   const brushColor = useDrawingStore((state) => state.brushColor);
@@ -18,30 +21,47 @@ const Drawing = () => {
   const isDrawing = useRef(false);
   const layerRef = useRef<Konva.Layer | null>(null);
 
+  useEffect(() => {
+    //필기 데이터 수신
+    socket.on("draw", (data: TLine) => {
+      setLines((prev) => [...prev, data]);
+    });
+
+    socket.on("clearCanvas", handleClearCanvas);
+
+    return () => {
+      socket.off("draw");
+      socket.off("clearCanvas");
+    };
+  }, []);
+
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
     if (!e.target) return;
     const pos = e.target.getStage()?.getPointerPosition();
     if (pos) {
-      setLines([...lines, { tool, points: [pos.x, pos.y], brushColor }]);
+      const newLine = { tool, points: [pos.x, pos.y], brushColor };
+      setLines([...lines, newLine]);
+      socket.emit("draw", newLine);
     }
   };
+
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    // no drawing - skipping
     if (!isDrawing.current) {
       return;
     }
     const stage = e.target.getStage();
     const point = stage?.getPointerPosition();
     let lastLine = lines[lines.length - 1];
-    // add point
+
     if (point) {
       lastLine.points = lastLine.points.concat([point.x, point.y]);
     }
 
-    // replace last
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
+
+    socket.emit("draw", lastLine);
   };
 
   const handleMouseUp = () => {
@@ -50,16 +70,21 @@ const Drawing = () => {
 
   const handleClearCanvas = () => {
     if (layerRef.current) {
-      layerRef.current.clear(); // Layer의 모든 도형을 지움
-      layerRef.current.destroyChildren(); // Layer 내의 모든 자식 요소 삭제
+      layerRef.current.clear();
+      layerRef.current.destroyChildren();
     }
-    setLines([]); // 상태 초기화
+    setLines([]);
   };
 
   return (
     <section id="container" className="flex h-full w-max items-center justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
-        <Tool onClear={handleClearCanvas} />
+        <Tool
+          onClear={() => {
+            handleClearCanvas();
+            socket.emit("clearCanvas");
+          }}
+        />
         <Stage
           id="canvas"
           className="rounded-xl bg-white"
