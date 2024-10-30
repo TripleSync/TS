@@ -52,6 +52,19 @@ io.on("connection", (socket) => {
       console.log("유저가 강의실에서 퇴장하였습니다.");
     });
   });
+  // 필기 좌표 전송
+  socket.on("draw", (data) => {
+    socket.broadcast.emit("draw", data); // 다른 클라이언트에게 필기 좌표 전송
+  });
+
+  socket.on("clearCanvas", () => {
+    io.emit("clearCanvas");
+  });
+
+  // 이미지 업데이트 전송
+  socket.on("updateImage", (data) => {
+    socket.broadcast.emit("updateImage", data); // 다른 클라이언트에게 이미지 업데이트 전송
+  });
 });
 
 const PORT = process.env.VITE_SOCKET_PORT || 5000;
