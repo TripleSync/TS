@@ -2,6 +2,8 @@ import VideoChatCopy from "@components/VideoChat/VideoChat";
 import BasicLayout from "layouts/BasicLayout";
 import ClassRoom from "page/ClassRoom";
 import Home from "page/Home";
+import Login from "page/Login";
+import SignUp from "page/SignUp";
 import { createBrowserRouter } from "react-router-dom";
 
 const Router = createBrowserRouter([
@@ -25,7 +27,11 @@ const Router = createBrowserRouter([
 
   {
     path: "/login",
-    element: "login",
+    element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
   },
 ]);
 export default Router;
