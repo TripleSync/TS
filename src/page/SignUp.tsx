@@ -1,6 +1,9 @@
 import LoginButton from "@components/Login/LoginButton";
 import LoginInput from "@components/Login/LoginInput";
 import LogoArea from "@components/Login/LogoArea";
+import { fbAuth, fbStore } from "config/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import useInput from "hooks/useInput";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,8 +16,25 @@ const SignUp = () => {
   const [nickname, onChangeNickname] = useInput("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(fbStore, "users", user.uid), {
+        name: name,
+        email: email,
+        phone: phone,
+        nickname: nickname,
+        createdAt: new Date(),
+      });
+      alert("회원가입 성공!");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

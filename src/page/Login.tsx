@@ -1,6 +1,8 @@
 import LoginButton from "@components/Login/LoginButton";
 import LoginInput from "@components/Login/LoginInput";
 import LogoArea from "@components/Login/LogoArea";
+import { fbAuth } from "config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import useInput from "hooks/useInput";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +12,15 @@ const Login = () => {
   const [password, onChangePassword] = useInput("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(fbAuth, email, password);
+      alert("로그인 성공");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
