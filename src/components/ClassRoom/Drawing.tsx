@@ -2,7 +2,7 @@ import Tool from "@components/ClassRoom/Drawing/Tool";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
-import { Layer, Line, Stage } from "react-konva";
+import { Image, Layer, Line, Stage } from "react-konva";
 import { io, Socket } from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 
@@ -20,6 +20,7 @@ const Drawing = () => {
   const [lines, setLines] = useState<TLine[]>([]);
   const isDrawing = useRef(false);
   const layerRef = useRef<Konva.Layer | null>(null);
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
     //필기 데이터 수신
@@ -27,11 +28,20 @@ const Drawing = () => {
       setLines((prev) => [...prev, data]);
     });
 
+    socket.on("updateImage", (data: string) => {
+      const img = new window.Image();
+      img.src = data;
+      img.onload = () => {
+        setImage(img);
+      };
+    });
+
     socket.on("clearCanvas", handleClearCanvas);
 
     return () => {
       socket.off("draw");
       socket.off("clearCanvas");
+      socket.off("updateImage");
     };
   }, []);
 
@@ -75,10 +85,26 @@ const Drawing = () => {
     }
     setLines([]);
   };
-
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imgData = reader.result as string;
+        const img = new window.Image();
+        img.src = imgData;
+        img.onload = () => {
+          setImage(img);
+          socket.emit("updateImage", imgData);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <section id="container" className="flex h-full w-max items-center justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
         <Tool
           onClear={() => {
             handleClearCanvas();
@@ -94,6 +120,7 @@ const Drawing = () => {
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
           <Layer ref={layerRef}>
+            {image && <Image image={image} x={0} y={0} width={750} height={550} />}
             {lines.map((line, i) => (
               <Line
                 key={i}
