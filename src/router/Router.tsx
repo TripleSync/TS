@@ -1,4 +1,3 @@
-import VideoChatCopy from "@components/VideoChat/VideoChat";
 import BasicLayout from "layouts/BasicLayout";
 import ClassRoom from "page/ClassRoom";
 import Home from "page/Home";
@@ -15,12 +14,8 @@ const Router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "classroom",
-        element: <ClassRoom />,
-      },
-      {
         path: "/classroom/:roomId",
-        element: <VideoChatCopy />,
+        element: <ClassRoom />,
       },
     ],
   },

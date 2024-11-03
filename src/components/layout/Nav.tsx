@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 const Nav = () => {
   return (
-    <nav className="h-16 w-full overflow-hidden bg-primary">
+    <nav className="h-16 min-h-16 w-full overflow-hidden bg-primary">
       <ul className="flex h-full w-full flex-row items-center justify-between px-4">
         <li>
           <NavLink to="/" className="inline-block">
@@ -17,7 +17,7 @@ const Nav = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/classroom" className="inline-block">
+          <NavLink to="/classroom/1" className="inline-block">
             <RxPerson className="text-3xl font-bold text-white" />
           </NavLink>
         </li>

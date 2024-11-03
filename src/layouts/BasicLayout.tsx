@@ -5,7 +5,7 @@ const BasicLayout = () => {
   return (
     <div className="flex h-full w-full flex-col">
       <Nav />
-      <main className="flex flex-1">
+      <main className="flex flex-1 py-5">
         <Outlet />
       </main>
     </div>
