@@ -14,7 +14,7 @@ const Router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "classroom",
+        path: "/classroom/:roomId",
         element: <ClassRoom />,
       },
     ],
