@@ -4,6 +4,7 @@ import Home from "page/Home";
 import Login from "page/Login";
 import SignUp from "page/SignUp";
 import { createBrowserRouter } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 const Router = createBrowserRouter([
   {
@@ -15,7 +16,11 @@ const Router = createBrowserRouter([
       },
       {
         path: "/classroom/:roomId",
-        element: <ClassRoom />,
+        element: (
+          <ProtectedRoute>
+            <ClassRoom />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
