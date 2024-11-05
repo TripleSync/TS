@@ -158,11 +158,13 @@ const VideoChat = () => {
   }, [roomId]);
 
   return (
-    <section id="video-container" className="flex h-full w-full flex-col items-center justify-around">
-      <Video id="myVideo" ref={localVideoRef} />
+    <section id="video-container" className="flex h-full w-fit flex-col items-center gap-3">
       <Video id="remoteVideo" ref={remoteVideoRef} />
-      {localStream && <Controls stream={localStream} />}
-      {localStream && <VolumeControls stream={localStream} />}
+      <Video id="myVideo" ref={localVideoRef} />
+      <div id="controls-container" className="flex w-full justify-between">
+        {localStream && <VolumeControls stream={localStream} />}
+        {localStream && <Controls stream={localStream} />}
+      </div>
     </section>
   );
 };

@@ -6,13 +6,14 @@ interface VideoProps {
 
 const Video = forwardRef<HTMLVideoElement, VideoProps>(({ id }, ref) => {
   return (
-    <div id="videoBox" className="w-fit rounded-md border-8 border-solid border-primary">
+    <div id="videoBox" className="mt-5 w-fit rounded-md border-4 border-solid border-primary">
       <video
         id={id}
         style={{
           width: 300,
           height: 250,
-          backgroundColor: "white",
+          backgroundColor: "black",
+          objectFit: "cover",
         }}
         ref={ref}
         autoPlay
