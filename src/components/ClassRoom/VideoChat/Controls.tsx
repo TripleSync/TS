@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash } from "react-icons/fa";
 interface ControlsProps {
   stream: MediaStream;
 }
@@ -28,9 +28,9 @@ const Controls = ({ stream }: ControlsProps) => {
   }, [stream]);
 
   return (
-    <div>
-      <button onClick={muteHandler}>{isMuted ? "마이크 on" : "마이크 off"}</button>
-      <button onClick={videoToggleHandler}>{isVideoOn ? "비디오 off" : "비디오 on"}</button>
+    <div id="controls" className="flex flex-row gap-3 text-xl">
+      <button onClick={videoToggleHandler}>{isVideoOn ? <FaVideo /> : <FaVideoSlash />}</button>
+      <button onClick={muteHandler}>{isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}</button>
     </div>
   );
 };

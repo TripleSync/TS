@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-
+import { FaVolumeDown } from "react-icons/fa";
 interface VolumeControlProps {
   stream: MediaStream;
 }
@@ -23,8 +23,10 @@ const VolumeControls = ({ stream }: VolumeControlProps) => {
   };
 
   return (
-    <div>
-      <label>Volume</label>
+    <div id="volume" className="flex">
+      <label className="text-2xl">
+        <FaVolumeDown />
+      </label>
       <input type="range" min="0" max="1" step="0.1" value={volume} onChange={volumeHandler} />
     </div>
   );

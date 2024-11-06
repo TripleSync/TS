@@ -1,8 +1,9 @@
+import Controls from "@components/ClassRoom/VideoChat/Controls";
+import Video from "@components/ClassRoom/VideoChat/Video";
+import VolumeControls from "@components/ClassRoom/VideoChat/VolumeControls";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import io, { Socket } from "socket.io-client";
-import Controls from "./Controls";
-import VolumeControls from "./VolumeControls";
 
 const VideoChat = () => {
   const navigate = useNavigate();
@@ -157,32 +158,14 @@ const VideoChat = () => {
   }, [roomId]);
 
   return (
-    <div>
-      <video
-        id="myVideo"
-        style={{
-          width: 240,
-          height: 240,
-          backgroundColor: "black",
-        }}
-        ref={localVideoRef}
-        autoPlay
-        playsInline
-      />
-      <video
-        id="remoteVideo"
-        style={{
-          width: 240,
-          height: 240,
-          backgroundColor: "black",
-        }}
-        ref={remoteVideoRef}
-        autoPlay
-        playsInline
-      />
-      {localStream && <Controls stream={localStream} />}
-      {localStream && <VolumeControls stream={localStream} />}
-    </div>
+    <section id="video-container" className="flex h-full w-fit flex-col items-center gap-3">
+      <Video id="remoteVideo" ref={remoteVideoRef} />
+      <Video id="myVideo" ref={localVideoRef} />
+      <div id="controls-container" className="flex w-full justify-between">
+        {localStream && <VolumeControls stream={localStream} />}
+        {localStream && <Controls stream={localStream} />}
+      </div>
+    </section>
   );
 };
 
