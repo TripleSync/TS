@@ -1,11 +1,17 @@
 import { BrushColor } from "@customTypes/drawing";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 
-const ColorBtn = ({ color }: { color: BrushColor }) => {
+interface ColorBtnProps {
+  color: BrushColor;
+  isSelected: boolean;
+}
+const ColorBtn = ({ color, isSelected }: ColorBtnProps) => {
   const setBrushColor = useDrawingStore((state) => state.setBrushColor);
+  const borderStyle = isSelected ? "border-white" : "border-transparent";
+
   return (
     <button
-      className="flex items-center justify-center w-5 h-5 rounded-full"
+      className={`flex h-5 w-5 items-center justify-center rounded-full border ${borderStyle}`}
       onClick={() => setBrushColor(color)}
       style={{ backgroundColor: color }}></button>
   );

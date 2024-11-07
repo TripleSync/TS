@@ -1,10 +1,10 @@
-import Tool from "@components/ClassRoom/Drawing/Tool";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Image, Layer, Line, Stage } from "react-konva";
 import io from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
+import ToolsContainer from "./Drawing/ToolsContainer";
 
 type TLine = {
   tool: string;
@@ -88,6 +88,7 @@ const Drawing = () => {
     }
     setLines([]);
   };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -104,18 +105,19 @@ const Drawing = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleClear = () => {
+    handleClearCanvas();
+    socket.emit("clearCanvas");
+  };
+
   return (
     <section id="container" className="flex h-full w-max items-center justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
         {isAllowed && (
           <>
             <input type="file" accept="image/*" onChange={handleImageUpload} />
-            <Tool
-              onClear={() => {
-                handleClearCanvas();
-                socket.emit("clearCanvas");
-              }}
-            />
+            <ToolsContainer onClear={handleClear} />
           </>
         )}
         <Stage
