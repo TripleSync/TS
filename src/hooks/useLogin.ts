@@ -2,8 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { fbAuth, fbStore } from "config/firebase";
 import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "store/actions/useUserStore";
 
 const loginUser = async (email: string, password: string) => {
   try {
@@ -21,11 +22,34 @@ const loginUser = async (email: string, password: string) => {
   }
 };
 
+// 유저 정보 저장
+const fetchUser = async () => {
+  const user = fbAuth.currentUser;
+  if (user) {
+    const userDocRef = doc(fbStore, "users", user.uid);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      const userData = userDocSnap.data();
+      return userData;
+    }
+  }
+};
+
 export const useLogin = () => {
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
   return useMutation({
     mutationFn: (data: { email: string; password: string }) => loginUser(data.email, data.password),
-    onSuccess: () => {
+    onSuccess: async () => {
+      const userData = await fetchUser();
+      userData &&
+        setUser({
+          userName: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          nickname: userData.nickname,
+          createdAt: userData.createdAt,
+        });
       alert("로그인 성공");
       navigate("/");
     },
