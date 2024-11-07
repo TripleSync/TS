@@ -22,6 +22,9 @@ const Drawing = () => {
   const layerRef = useRef<Konva.Layer | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
+  const port = window.location.port;
+  const isAllowed = port === "5173"; // 학생or선생님 구분용
+
   useEffect(() => {
     //필기 데이터 수신
     socket.on("draw", (data: TLine) => {
@@ -47,7 +50,7 @@ const Drawing = () => {
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
-    if (!e.target) return;
+    if (!e.target || !isAllowed) return;
     const pos = e.target.getStage()?.getPointerPosition();
     if (pos) {
       const newLine = { tool, points: [pos.x, pos.y], brushColor };
@@ -57,7 +60,7 @@ const Drawing = () => {
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if (!isDrawing.current) {
+    if (!isDrawing.current || !isAllowed) {
       return;
     }
     const stage = e.target.getStage();
@@ -104,13 +107,17 @@ const Drawing = () => {
   return (
     <section id="container" className="flex h-full w-max items-center justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        <Tool
-          onClear={() => {
-            handleClearCanvas();
-            socket.emit("clearCanvas");
-          }}
-        />
+        {isAllowed && (
+          <>
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
+            <Tool
+              onClear={() => {
+                handleClearCanvas();
+                socket.emit("clearCanvas");
+              }}
+            />
+          </>
+        )}
         <Stage
           id="canvas"
           className="rounded-xl bg-white"
