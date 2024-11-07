@@ -3,7 +3,7 @@ import type { Chat } from "@customTypes/chat";
 import { User } from "@customTypes/user";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IoChatboxOutline } from "react-icons/io5";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 import { useChatStore } from "store/actions/useChatStore";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";

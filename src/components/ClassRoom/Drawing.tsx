@@ -3,7 +3,7 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Image, Layer, Line, Stage } from "react-konva";
-import { io, Socket } from "socket.io-client";
+import io from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 
 type TLine = {
@@ -12,7 +12,7 @@ type TLine = {
   brushColor: string;
 };
 
-const socket: Socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000");
 
 const Drawing = () => {
   const tool = useDrawingStore((state) => state.tool);
