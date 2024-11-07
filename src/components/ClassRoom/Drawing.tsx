@@ -112,7 +112,7 @@ const Drawing = () => {
   };
 
   return (
-    <section id="container" className="flex h-full w-max items-center justify-center">
+    <section id="container" className="flex h-full w-max items-start justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
         {isAllowed && (
           <>
@@ -123,13 +123,13 @@ const Drawing = () => {
         <Stage
           id="canvas"
           className="rounded-xl bg-white"
-          width={750}
-          height={550}
+          width={900}
+          height={570}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
           <Layer ref={layerRef}>
-            {image && <Image image={image} x={0} y={0} width={750} height={550} />}
+            {image && <Image image={image} x={0} y={0} width={900} height={570} />}
             {lines.map((line, i) => (
               <Line
                 key={i}
