@@ -39,10 +39,15 @@ const Drawing = () => {
       };
     });
 
+    socket.on("initializeLines", (initialLines: TLine[]) => {
+      setLines(initialLines);
+    });
+
     socket.on("clearCanvas", handleClearCanvas);
 
     return () => {
       socket.off("draw");
+      socket.off("initializeLines");
       socket.off("clearCanvas");
       socket.off("updateImage");
     };
