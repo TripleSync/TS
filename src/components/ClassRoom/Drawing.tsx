@@ -1,10 +1,10 @@
-import Tool from "@components/ClassRoom/Drawing/Tool";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Image, Layer, Line, Stage } from "react-konva";
-import { io, Socket } from "socket.io-client";
+import io from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
+import ToolsContainer from "./Drawing/ToolsContainer";
 
 type TLine = {
   tool: string;
@@ -12,7 +12,7 @@ type TLine = {
   brushColor: string;
 };
 
-const socket: Socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000");
 
 const Drawing = () => {
   const tool = useDrawingStore((state) => state.tool);
@@ -21,6 +21,9 @@ const Drawing = () => {
   const isDrawing = useRef(false);
   const layerRef = useRef<Konva.Layer | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
+
+  const port = window.location.port;
+  const isAllowed = port === "5173"; // 학생or선생님 구분용
 
   useEffect(() => {
     //필기 데이터 수신
@@ -47,7 +50,7 @@ const Drawing = () => {
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
-    if (!e.target) return;
+    if (!e.target || !isAllowed) return;
     const pos = e.target.getStage()?.getPointerPosition();
     if (pos) {
       const newLine = { tool, points: [pos.x, pos.y], brushColor };
@@ -57,7 +60,7 @@ const Drawing = () => {
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if (!isDrawing.current) {
+    if (!isDrawing.current || !isAllowed) {
       return;
     }
     const stage = e.target.getStage();
@@ -85,6 +88,7 @@ const Drawing = () => {
     }
     setLines([]);
   };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -101,26 +105,31 @@ const Drawing = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleClear = () => {
+    handleClearCanvas();
+    socket.emit("clearCanvas");
+  };
+
   return (
-    <section id="container" className="flex h-full w-max items-center justify-center">
+    <section id="container" className="flex h-full w-max items-start justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        <Tool
-          onClear={() => {
-            handleClearCanvas();
-            socket.emit("clearCanvas");
-          }}
-        />
+        {isAllowed && (
+          <>
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
+            <ToolsContainer onClear={handleClear} />
+          </>
+        )}
         <Stage
           id="canvas"
           className="rounded-xl bg-white"
-          width={750}
-          height={550}
+          width={900}
+          height={570}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
           <Layer ref={layerRef}>
-            {image && <Image image={image} x={0} y={0} width={750} height={550} />}
+            {image && <Image image={image} x={0} y={0} width={900} height={570} />}
             {lines.map((line, i) => (
               <Line
                 key={i}
