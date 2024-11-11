@@ -87,10 +87,6 @@ const Drawing = () => {
   };
 
   const handleClearCanvas = () => {
-    if (layerRef.current) {
-      layerRef.current.clear();
-      layerRef.current.destroyChildren();
-    }
     setLines([]);
   };
 
