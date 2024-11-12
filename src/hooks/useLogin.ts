@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { fbAuth, fbStore } from "config/firebase";
 import { FirebaseError } from "firebase/app";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "store/actions/useUserStore";
@@ -49,6 +49,7 @@ export const useLogin = () => {
           phone: userData.phone,
           nickname: userData.nickname,
           createdAt: userData.createdAt,
+          profileUrl: userData.profileUrl,
         });
       alert("로그인 성공");
       navigate("/");
@@ -56,10 +57,18 @@ export const useLogin = () => {
   });
 };
 
-const signUpUser = async (name: string, email: string, password: string, phone: string, nickname: string) => {
+const signUpUser = async (
+  name: string,
+  email: string,
+  password: string,
+  phone: string,
+  nickname: string,
+  profileUrl: string | null
+) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
     const user = userCredential.user;
+    if (user) await sendEmailVerification(user);
 
     await setDoc(doc(fbStore, "users", user.uid), {
       name: name,
@@ -67,6 +76,7 @@ const signUpUser = async (name: string, email: string, password: string, phone: 
       phone: phone,
       nickname: nickname,
       createdAt: new Date(),
+      profileUrl: profileUrl,
     });
 
     return user;
@@ -82,8 +92,14 @@ const signUpUser = async (name: string, email: string, password: string, phone: 
 export const useSignUp = () => {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (data: { name: string; email: string; password: string; phone: string; nickname: string }) =>
-      signUpUser(data.name, data.email, data.password, data.phone, data.nickname),
+    mutationFn: (data: {
+      name: string;
+      email: string;
+      password: string;
+      phone: string;
+      nickname: string;
+      profileUrl: string | null;
+    }) => signUpUser(data.name, data.email, data.password, data.phone, data.nickname, data.profileUrl),
     onSuccess: () => {
       alert("회원가입 성공!");
       navigate("/login");
