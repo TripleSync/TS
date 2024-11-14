@@ -27,9 +27,13 @@ const SignUp = () => {
       <div className="flex w-1/2 items-center justify-center bg-gray-100">
         <div className="w-full p-8">
           <div className="flex w-full justify-center">
-            <img src={profileUrl} alt="" className="h-[250px] w-[250px] rounded-full bg-primary object-cover" />
+            <img
+              src={profileUrl}
+              alt=""
+              className="h-[150px] w-[150px] rounded-full bg-primary object-cover xl:h-[250px] xl:w-[250px]"
+            />
           </div>
-          <h2 className="my-6 text-center text-2xl font-bold">Sign Up</h2>
+          <h2 className="my-3 text-center text-2xl font-bold">Sign Up</h2>
           {isError && <p className="text-center text-red-500">{error.message}</p>}
           <form onSubmit={handleSubmit}>
             <LoginInput label="Name" type="text" id="name" value={name} onChange={onChangeName} />

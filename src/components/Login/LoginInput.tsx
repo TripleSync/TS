@@ -13,7 +13,7 @@ const LoginInput = ({
   required?: boolean;
   id: string;
 }) => (
-  <div className="mt-4">
+  <div className="mt-1">
     <label htmlFor={id} className="block text-sm font-medium text-gray-700">
       {label}
     </label>
