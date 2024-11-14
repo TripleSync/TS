@@ -6,9 +6,19 @@ const io = require("socket.io")(server, {
   cors: { origin: "*", methods: ["*"], credentials: true },
 });
 
+let currentImg = null;
+let currentLines = [];
 app.use(express.static(__dirname + "'../dist'"));
 
 io.on("connection", (socket) => {
+  if (currentImg) {
+    console.log("Sending current image to new user");
+    socket.broadcast.emit("updateImage", currentImg);
+  }
+  if (currentLines.length > 0) {
+    socket.broadcast.emit("initializeLines", currentLines);
+  }
+
   socket.on("message", (message) => {
     io.emit("message", message);
   });
@@ -54,15 +64,18 @@ io.on("connection", (socket) => {
   });
   // 필기 좌표 전송
   socket.on("draw", (data) => {
+    currentLines.push(data);
     socket.broadcast.emit("draw", data); // 다른 클라이언트에게 필기 좌표 전송
   });
 
   socket.on("clearCanvas", () => {
+    currentLines = [];
     io.emit("clearCanvas");
   });
 
   // 이미지 업데이트 전송
   socket.on("updateImage", (data) => {
+    currentImg = data;
     socket.broadcast.emit("updateImage", data); // 다른 클라이언트에게 이미지 업데이트 전송
   });
 });
