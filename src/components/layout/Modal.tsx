@@ -18,7 +18,7 @@ const Modal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
 
   return (
     <div
-      className={`fixed inset-0 z-10 flex transform justify-end transition-transform duration-300 ${
+      className={`fixed inset-0 z-10 flex h-fit transform justify-end transition-transform duration-300 ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
       onClick={onClose}>
