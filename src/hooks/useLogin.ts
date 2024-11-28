@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { fbAuth, fbStore } from "config/firebase";
 import { FirebaseError } from "firebase/app";
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "store/actions/useUserStore";
@@ -47,7 +47,7 @@ export const useLogin = () => {
           userName: userData.name,
           email: userData.email,
           phone: userData.phone,
-          nickname: userData.nickname,
+          role: userData.role,
           createdAt: userData.createdAt,
           profileUrl: userData.profileUrl,
         });
@@ -62,19 +62,18 @@ const signUpUser = async (
   email: string,
   password: string,
   phone: string,
-  nickname: string,
+  role: string,
   profileUrl: string | null
 ) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
     const user = userCredential.user;
-    if (user) await sendEmailVerification(user);
 
     await setDoc(doc(fbStore, "users", user.uid), {
       name: name,
       email: email,
       phone: phone,
-      nickname: nickname,
+      role: role,
       createdAt: new Date(),
       profileUrl: profileUrl,
     });
@@ -97,9 +96,9 @@ export const useSignUp = () => {
       email: string;
       password: string;
       phone: string;
-      nickname: string;
+      role: string;
       profileUrl: string | null;
-    }) => signUpUser(data.name, data.email, data.password, data.phone, data.nickname, data.profileUrl),
+    }) => signUpUser(data.name, data.email, data.password, data.phone, data.role, data.profileUrl),
     onSuccess: () => {
       alert("회원가입 성공!");
       navigate("/login");
