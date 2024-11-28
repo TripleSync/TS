@@ -1,12 +1,12 @@
 import profile from "@assets/user1.svg";
+import ChatInput from "@components/ClassRoom/Chatting/ChatInput";
+import ChatMessage from "@components/ClassRoom/Chatting/ChatMessage";
 import type { Chat } from "@customTypes/chat";
 import { User } from "@customTypes/user";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IoChatboxOutline } from "react-icons/io5";
+import { PiChatTeardropTextFill } from "react-icons/pi";
 import io from "socket.io-client";
 import { useChatStore } from "store/actions/useChatStore";
-import ChatInput from "./ChatInput";
-import ChatMessage from "./ChatMessage";
 
 const socket = io("localhost:5000");
 
@@ -47,30 +47,20 @@ const Chat = () => {
   return (
     <>
       <section
-        className={`fixed bottom-0 right-0 transition-transform duration-300 ${
+        id="chatting"
+        className={`fixed bottom-9 right-3 flex h-5/6 w-[450px] flex-col rounded-md border-2 border-gray-300 bg-white transition-transform duration-300 ${
           isChat ? "translate-x-0" : "translate-x-full"
         }`}>
-        <div className="flex h-screen max-h-[865px] w-[450px] flex-col overflow-y-auto">
-          <div className="mt-4 flex justify-center">
-            <span className="w-1/2 rounded bg-primary text-center">{"채팅하기"}</span>
-          </div>
-          <div className="mt-4 w-1/2 text-center">
-            <span className="text-primary">이름</span>
-            <input type="text" onChange={(e) => setUserName(e.target.value)} />
-          </div>
-          <div>
-            <ul className="flex-grow p-4">
-              {chatList.map((chat, index) => (
-                <ChatMessage key={index} chat={chat} userName={userName} />
-              ))}
-              <div className="h-14" ref={chatEndRef} />
-            </ul>
-          </div>
-          <ChatInput sendMessage={sendMessage} />
-        </div>
+        <ul className="flex-grow overflow-y-auto p-4">
+          {chatList.map((chat, index) => (
+            <ChatMessage key={index} chat={chat} userName={userName} />
+          ))}
+          <div ref={chatEndRef} />
+        </ul>
+        <ChatInput sendMessage={sendMessage} />
       </section>
       <button className="fixed bottom-2 right-0" onClick={() => setIsChat((prev) => !prev)}>
-        <IoChatboxOutline fontSize={"1.5em"} />
+        <PiChatTeardropTextFill className="text-5xl text-primary" />
       </button>
     </>
   );

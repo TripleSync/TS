@@ -10,7 +10,7 @@ const ChatInput = ({ sendMessage }: { sendMessage: (text: string) => void }) => 
     }
   };
   return (
-    <div className="fixed bottom-0 left-0 flex w-[450px] bg-white p-4 shadow-md">
+    <div className="flex h-20 w-full p-4">
       <input
         className="mr-4 flex-grow rounded border border-gray-300 p-2"
         type="text"
