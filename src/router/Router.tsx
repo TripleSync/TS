@@ -1,10 +1,10 @@
 import BasicLayout from "layouts/BasicLayout";
+import RoomLayout from "layouts/RoomLayout";
 import ClassRoom from "page/ClassRoom";
 import Home from "page/Home";
 import Login from "page/Login";
 import SignUp from "page/SignUp";
 import { createBrowserRouter } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
 
 const Router = createBrowserRouter([
   {
@@ -13,29 +13,34 @@ const Router = createBrowserRouter([
       {
         index: true,
         element: (
-          <ProtectedRoute>
+          <>
             <Home />
-          </ProtectedRoute>
+          </>
         ),
       },
       {
-        path: "/classroom/:roomId",
-        element: (
-          <ProtectedRoute>
-            <ClassRoom />
-          </ProtectedRoute>
-        ),
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "signup",
+        element: <SignUp />,
       },
     ],
   },
-
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/signup",
-    element: <SignUp />,
+    element: <RoomLayout />,
+    path: "/classroom",
+    children: [
+      {
+        path: ":roomId",
+        element: (
+          <>
+            <ClassRoom />
+          </>
+        ),
+      },
+    ],
   },
 ]);
 export default Router;
