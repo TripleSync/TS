@@ -1,11 +1,11 @@
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
+import { LuImagePlus } from "react-icons/lu";
 import { Image, Layer, Line, Stage } from "react-konva";
 import io from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 import ToolsContainer from "./Drawing/ToolsContainer";
-
 type TLine = {
   tool: string;
   points: any[];
@@ -117,7 +117,10 @@ const Drawing = () => {
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
         {isAllowed && (
           <>
-            <input type="file" accept="image/*" onChange={handleImageUpload} />
+            <label htmlFor="img-file" className="w-fit cursor-pointer">
+              <LuImagePlus size="30" />
+            </label>
+            <input id="img-file" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             <ToolsContainer onClear={handleClear} />
           </>
         )}
@@ -125,12 +128,12 @@ const Drawing = () => {
           id="canvas"
           className="rounded-xl bg-white"
           width={900}
-          height={570}
+          height={550}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
           <Layer ref={layerRef}>
-            {image && <Image image={image} x={0} y={0} width={900} height={570} />}
+            {image && <Image image={image} x={0} y={0} width={900} height={550} />}
             {lines.map((line, i) => (
               <Line
                 key={i}
