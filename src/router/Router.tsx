@@ -9,6 +9,7 @@ import { createBrowserRouter } from "react-router-dom";
 const Router = createBrowserRouter([
   {
     element: <BasicLayout />,
+    path: "/",
     children: [
       {
         index: true,
