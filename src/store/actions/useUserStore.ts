@@ -5,5 +5,9 @@ import { create } from "zustand";
 export const useUserStore = create<UserStoreType>((set) => ({
   user: null,
   setUser: (data: User) => set(() => ({ user: data })),
-  clearUser: () => set({ user: null }),
+  clearUser: () => {
+    set({ user: null });
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+  },
 }));

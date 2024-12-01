@@ -30,9 +30,11 @@ const fetchUser = async () => {
     const userDocSnap = await getDoc(userDocRef);
     if (userDocSnap.exists()) {
       const userData = userDocSnap.data();
+      localStorage.setItem("user", JSON.stringify(userData));
       return userData;
     }
   }
+  return null;
 };
 
 export const useLogin = () => {
