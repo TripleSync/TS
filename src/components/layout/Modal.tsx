@@ -12,7 +12,6 @@ const Modal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
 
   const handleLogout = () => {
     clearUser();
-    localStorage.removeItem("authToken");
     navigate("/login");
   };
 

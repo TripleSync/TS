@@ -11,14 +11,14 @@ const SignUp = () => {
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
   const [phone, onChangePhone] = useInput("");
-  const [nickname, onChangeNickname] = useInput("");
+  const [role, onChangeRole] = useInput("0");
   const [profileUrl, onChangeProfileUrl] = useInput("");
   const { mutate, isError, error } = useSignUp();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({ name, email, password, phone, nickname, profileUrl });
+    mutate({ name, email, password, phone, role, profileUrl });
   };
 
   return (
@@ -36,11 +36,38 @@ const SignUp = () => {
           <h2 className="my-3 text-center text-2xl font-bold">Sign Up</h2>
           {isError && <p className="text-center text-red-500">{error.message}</p>}
           <form onSubmit={handleSubmit}>
-            <LoginInput label="Name" type="text" id="name" value={name} onChange={onChangeName} />
+            <div className="flex items-center">
+              <div className="w-1/2">
+                <LoginInput label="Name" type="text" id="name" value={name} onChange={onChangeName} />
+              </div>
+              <div className="ml-4 mt-8 flex gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="0"
+                    checked={role === "0"}
+                    onChange={onChangeRole}
+                    className="mr-2"
+                  />
+                  Student
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="1"
+                    checked={role === "1"}
+                    onChange={onChangeRole}
+                    className="mr-2"
+                  />
+                  Teacher
+                </label>
+              </div>
+            </div>
             <LoginInput label="Email" type="email" id="email" value={email} onChange={onChangeEmail} />
             <LoginInput label="Password" type="password" id="password" value={password} onChange={onChangePassword} />
             <LoginInput label="Phone Number" type="tel" id="phone" value={phone} onChange={onChangePhone} />
-            <LoginInput label="Nickname" type="text" id="nickname" value={nickname} onChange={onChangeNickname} />
             <LoginInput
               label="Profile Image"
               type="text"

@@ -31,7 +31,11 @@ const Router = createBrowserRouter([
 
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <ProtectedRoute>
+        <Login />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/signup",
