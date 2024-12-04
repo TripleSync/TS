@@ -1,28 +1,29 @@
 import Button from "@components/common/Button";
-import ProfilePhoto from "@components/common/ProfilePhoto";
 import { useNavigate } from "react-router-dom";
-
-const inputStyle =
-  "mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-secondary focus:outline-none focus:ring-secondary";
-
+import { useUserStore } from "store/actions/useUserStore";
 const Home = () => {
   const navigate = useNavigate();
+  const user = useUserStore((state) => state.user);
+
   return (
     <div className="flex h-full flex-col justify-center gap-7">
-      <div id="profile" className="flex flex-col">
-        <ProfilePhoto />
-        <h1 className={inputStyle}>Name</h1>
-        <p className={inputStyle}>email</p>
-        <p className={inputStyle}>00:00:00</p>
-      </div>
-      <div className="mt-5 flex justify-between">
-        <Button text="마이페이지" />
+      <h2 className="my-3 text-center text-2xl font-bold"> {`Welcome ${user?.name ?? "Home"}!`}</h2>
+
+      <div className="flex flex-col items-center justify-center gap-5">
         <Button
           text="강의실 입장"
           onClick={() => {
             navigate("/classroom/1");
           }}
         />
+        <Button
+          text="마이페이지"
+          onClick={() => {
+            navigate("/mypage");
+          }}
+        />
+
+        <Button text="로그아웃" />
       </div>
     </div>
   );
