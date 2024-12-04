@@ -3,6 +3,6 @@ export type User = {
   profileUrl?: string;
   email?: string;
   phone?: string;
-  nickname?: string;
+  role?: string;
   createdAt?: Date;
 };

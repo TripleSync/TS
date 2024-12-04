@@ -10,14 +10,14 @@ const SignUp = () => {
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
   const [phone, onChangePhone] = useInput("");
-  const [nickname, onChangeNickname] = useInput("");
+  const [role, onChangeRole] = useInput("0");
   const [profileUrl, onChangeProfileUrl] = useInput("");
   const { mutate, isError, error } = useSignUp();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({ name, email, password, phone, nickname, profileUrl });
+    mutate({ name, email, password, phone, role, profileUrl });
   };
 
   return (
