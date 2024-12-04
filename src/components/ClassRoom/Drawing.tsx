@@ -125,12 +125,12 @@ const Drawing = () => {
           id="canvas"
           className="rounded-xl bg-white"
           width={900}
-          height={570}
+          height={550}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
           <Layer ref={layerRef}>
-            {image && <Image image={image} x={0} y={0} width={900} height={570} />}
+            {image && <Image image={image} x={0} y={0} width={900} height={550} />}
             {lines.map((line, i) => (
               <Line
                 key={i}

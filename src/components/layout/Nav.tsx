@@ -16,9 +16,7 @@ const Nav = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/" className="inline-block">
-            <img src={logo} className="m-auto mt-1 w-24" />
-          </NavLink>
+          <img src={logo} className="m-auto mt-1 w-24" />
         </li>
         <li>
           <button onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)} className="inline-block">

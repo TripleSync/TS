@@ -16,6 +16,7 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   }, []);
 
   if (location.pathname === "/login") {
+    console.log(localStorage.getItem("user"));
     if (!user && !localStorage.getItem("user")) return children;
     return <Navigate to="/" replace />;
   }
