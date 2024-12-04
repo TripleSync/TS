@@ -6,15 +6,10 @@ import Login from "page/Login";
 import MyPage from "page/MyPage";
 import SignUp from "page/SignUp";
 import { createBrowserRouter } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
 
 const Router = createBrowserRouter([
   {
-    element: (
-      <ProtectedRoute>
-        <BasicLayout />
-      </ProtectedRoute>
-    ),
+    element: <BasicLayout />,
     path: "/",
     children: [
       {
@@ -40,11 +35,7 @@ const Router = createBrowserRouter([
     ],
   },
   {
-    element: (
-      <ProtectedRoute>
-        <RoomLayout />
-      </ProtectedRoute>
-    ),
+    element: <RoomLayout />,
     path: "/classroom",
     children: [
       {
