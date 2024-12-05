@@ -35,13 +35,17 @@ const getUIDFromToken = (token: string) => {
 
 export const useFetchUserQuery = () => {
   const setUser = useUserStore((state) => state.setUser);
+  const clearUser = useUserStore((state) => state.clearUser);
   const token = localStorage.getItem("authToken");
   const uid = token ? getUIDFromToken(token) : null;
 
   return useQuery({
     queryKey: [uid],
     queryFn: async () => {
-      if (!uid) return null;
+      if (!uid) {
+        clearUser();
+        return null;
+      }
       const data = await fetchUser(uid);
       data && setUser(data);
       return data;
