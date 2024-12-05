@@ -3,6 +3,7 @@ import RoomLayout from "layouts/RoomLayout";
 import ClassRoom from "page/ClassRoom";
 import Home from "page/Home";
 import Login from "page/Login";
+import MyPage from "page/MyPage";
 import SignUp from "page/SignUp";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -26,6 +27,10 @@ const Router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "mypage",
+        element: <MyPage />,
       },
     ],
   },
