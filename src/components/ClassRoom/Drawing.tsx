@@ -1,18 +1,15 @@
+import { TLine } from "@customTypes/drawing";
+import { useSocket } from "hooks/useSocket";
+import { useSocketEmit } from "hooks/useSocketEmit";
+import { useSocketEvent } from "hooks/useSocketEvent";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Image, Layer, Line, Stage } from "react-konva";
-import io from "socket.io-client";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 import ToolsContainer from "./Drawing/ToolsContainer";
 
-type TLine = {
-  tool: string;
-  points: any[];
-  brushColor: string;
-};
-
-const socket = io("http://localhost:5000");
+const URL = "http://localhost:5000";
 
 const Drawing = () => {
   const tool = useDrawingStore((state) => state.tool);
@@ -25,33 +22,8 @@ const Drawing = () => {
   const port = window.location.port;
   const isAllowed = port === "5173"; // 학생or선생님 구분용
 
-  useEffect(() => {
-    //필기 데이터 수신
-    socket.on("draw", (data: TLine) => {
-      setLines((prev) => [...prev, data]);
-    });
-
-    socket.on("updateImage", (data: string) => {
-      const img = new window.Image();
-      img.src = data;
-      img.onload = () => {
-        setImage(img);
-      };
-    });
-
-    socket.on("initializeLines", (initialLines: TLine[]) => {
-      setLines(initialLines);
-    });
-
-    socket.on("clearCanvas", handleClearCanvas);
-
-    return () => {
-      socket.off("draw");
-      socket.off("initializeLines");
-      socket.off("clearCanvas");
-      socket.off("updateImage");
-    };
-  }, []);
+  const { socket, isConnected } = useSocket(URL);
+  const emit = useSocketEmit(socket, isConnected);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
@@ -60,7 +32,7 @@ const Drawing = () => {
     if (pos) {
       const newLine = { tool, points: [pos.x, pos.y], brushColor };
       setLines([...lines, newLine]);
-      socket.emit("draw", newLine);
+      emit("draw", newLine);
     }
   };
 
@@ -79,7 +51,7 @@ const Drawing = () => {
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
 
-    socket.emit("draw", lastLine);
+    emit("draw", lastLine);
   };
 
   const handleMouseUp = () => {
@@ -100,7 +72,7 @@ const Drawing = () => {
         img.src = imgData;
         img.onload = () => {
           setImage(img);
-          socket.emit("updateImage", imgData);
+          emit("updateImage", imgData);
         };
       };
       reader.readAsDataURL(file);
@@ -109,8 +81,26 @@ const Drawing = () => {
 
   const handleClear = () => {
     handleClearCanvas();
-    socket.emit("clearCanvas");
+    emit("clearCanvas");
   };
+
+  useSocketEvent(socket, isConnected, "draw", (data: TLine) => {
+    setLines((prev) => [...prev, data]);
+  });
+
+  useSocketEvent(socket, isConnected, "updateImage", (data: string) => {
+    const img = new window.Image();
+    img.src = data;
+    img.onload = () => {
+      setImage(img);
+    };
+  });
+
+  useSocketEvent(socket, isConnected, "initializeLines", (initialLines: TLine[]) => {
+    setLines(initialLines);
+  });
+
+  useSocketEvent(socket, isConnected, "clearCanvas", handleClearCanvas);
 
   return (
     <section id="container" className="flex h-full w-max items-start justify-center">
