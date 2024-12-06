@@ -1,9 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { fbAuth, fbStore } from "config/firebase";
 import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "store/actions/useUserStore";
 
 const loginUser = async (email: string, password: string) => {
   try {
@@ -21,18 +23,81 @@ const loginUser = async (email: string, password: string) => {
   }
 };
 
-export const useLogin = () => {
-  const navigate = useNavigate();
-  return useMutation({
-    mutationFn: (data: { email: string; password: string }) => loginUser(data.email, data.password),
-    onSuccess: () => {
-      alert("로그인 성공");
-      navigate("/");
+const getUIDFromToken = (token: string) => {
+  try {
+    const decodedToken: { user_id: string } = jwtDecode(token);
+    return decodedToken.user_id;
+  } catch (error) {
+    console.error("토큰 디코딩 실패:", error);
+    return null;
+  }
+};
+
+export const useFetchUserQuery = () => {
+  const setUser = useUserStore((state) => state.setUser);
+  const clearUser = useUserStore((state) => state.clearUser);
+  const token = localStorage.getItem("authToken");
+  const uid = token ? getUIDFromToken(token) : null;
+
+  return useQuery({
+    queryKey: [uid],
+    queryFn: async () => {
+      if (!uid) {
+        clearUser();
+        return null;
+      }
+      const data = await fetchUser(uid);
+      data && setUser(data);
+      return data;
     },
   });
 };
 
-const signUpUser = async (name: string, email: string, password: string, phone: string, nickname: string) => {
+// 유저 정보 저장
+const fetchUser = async (uid: string) => {
+  const userDocRef = doc(fbStore, "users", uid);
+  const userDocSnap = await getDoc(userDocRef);
+  if (userDocSnap.exists()) {
+    const userData = userDocSnap.data();
+    return userData;
+  }
+
+  return null;
+};
+
+export const useLogin = () => {
+  const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+  return useMutation({
+    mutationFn: (data: { email: string; password: string }) => loginUser(data.email, data.password),
+    onSuccess: async () => {
+      const user = fbAuth.currentUser;
+      if (user) {
+        const userData = await fetchUser(user.uid);
+        userData &&
+          setUser({
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            role: userData.role,
+            createdAt: userData.createdAt,
+            profileUrl: userData.profileUrl,
+          });
+        alert("로그인 성공");
+        navigate("/");
+      }
+    },
+  });
+};
+
+const signUpUser = async (
+  name: string,
+  email: string,
+  password: string,
+  phone: string,
+  role: string,
+  profileUrl: string | null
+) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
     const user = userCredential.user;
@@ -41,8 +106,9 @@ const signUpUser = async (name: string, email: string, password: string, phone: 
       name: name,
       email: email,
       phone: phone,
-      nickname: nickname,
+      role: role,
       createdAt: new Date(),
+      profileUrl: profileUrl,
     });
 
     return user;
@@ -58,8 +124,14 @@ const signUpUser = async (name: string, email: string, password: string, phone: 
 export const useSignUp = () => {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (data: { name: string; email: string; password: string; phone: string; nickname: string }) =>
-      signUpUser(data.name, data.email, data.password, data.phone, data.nickname),
+    mutationFn: (data: {
+      name: string;
+      email: string;
+      password: string;
+      phone: string;
+      role: string;
+      profileUrl: string | null;
+    }) => signUpUser(data.name, data.email, data.password, data.phone, data.role, data.profileUrl),
     onSuccess: () => {
       alert("회원가입 성공!");
       navigate("/login");

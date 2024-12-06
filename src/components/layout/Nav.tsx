@@ -1,8 +1,12 @@
 import logo from "@assets/whitelogo.png";
+import { useState } from "react";
 import { RxExit, RxPerson } from "react-icons/rx";
 import { NavLink } from "react-router-dom";
+import Modal from "./Modal";
 
 const Nav = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <nav className="h-16 min-h-16 w-full overflow-hidden bg-primary">
       <ul className="flex h-full w-full flex-row items-center justify-between px-4">
@@ -12,16 +16,16 @@ const Nav = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/" className="inline-block">
-            <img src={logo} className="m-auto mt-1 w-24" />
-          </NavLink>
+          <img src={logo} className="m-auto mt-1 w-24" />
         </li>
         <li>
-          <NavLink to="/classroom/1" className="inline-block">
+          <button onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)} className="inline-block">
             <RxPerson className="text-3xl font-bold text-white" />
-          </NavLink>
+          </button>
         </li>
       </ul>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </nav>
   );
 };
