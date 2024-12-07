@@ -1,50 +1,182 @@
-# React + TypeScript + Vite
+<div align=center>
+  <h1>💡 Teach Sync 💡</h1>
+</div>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<br/>
 
-Currently, two official plugins are available:
+## 목차
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. [프로젝트 소개](#-프로젝트-소개)
+2. [개발 기간 및 버전 정보](#%EF%B8%8F-개발-기간-및-버전-정보)
+3. [주요 기능](#-주요-기능)
+4. [설치 및 실행방법](#%EF%B8%8F-설치-및-실행방법)
+5. [바로 가기](#%EF%B8%8F-바로-가기)
+6. [기술 스택](#%EF%B8%8F-기술-스택)
+7. [디렉토리 구조](#-디렉토리-구조)
+8. [컨벤션](#-컨벤션)
+9. [FAQ](#-faq)
 
-## Expanding the ESLint configuration
+<br/>
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 💡 프로젝트 소개
 
-- Configure the top-level `parserOptions` property like this:
+> ### Teach Sync는 비대면 과외 서비스를 제공합니다.
+>
+> ### 실시간으로 소통하며 공부할 수 있는 플랫폼을 이용해 보세요!
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+<br/>
+
+## 💡 개발 기간 및 버전 정보
+
+> ### V1.0 : 2024.10.15 ~
+>
+> - 프로젝트 기획
+> - 화면 디자인
+> - 홈 / 마이페이지 / 강의실 구현
+> - firebase 인증 및 사용자 DB 설정
+
+<br/>
+
+## 💡 주요 기능
+
+### 1. 로그인
+
+- firebase DB 조회
+- email, password 로그인
+- 로그인 완료 시 localStorage에 token 저장
+
+### 2. 회원가입
+
+- firebase DB 저장
+- name , email, password, role, phone number 필수
+- profile image 선택, 이미지 url 첨부
+
+### 3. 홈
+
+- token을 통해 firebase user정보 조회
+- 강의실 이동, 마이페이지, 로그아웃 버튼
+
+### 4. 마이페이지
+
+- password 제외한 정보 출력
+- 이름, 이메일 변경 불가능
+- 총 강의 시간 출력
+
+### 5. 강의실
+
+#### 5.1) 네비게이션
+
+- 사용자 버튼 클릭 시, 모달이 나타남
+- 홈, 마이페이지, 로그아웃 버튼
+
+#### 5.2) 그림판 및 화면 공유
+
+- role이 teacher일 경우 그림판 도구 사용 가능
+- 이미지와 필기 공유
+
+#### 5.3) 화상채팅
+
+- 상단 박스 : 상대방
+- 하단 박스 : 본인
+- 소리 크기 조절, 화면 on/off , 음소거
+
+#### 5.3) 텍스트 채팅
+
+- 오른쪽 하단 채팅 아이콘 버튼
+- 버튼 클릭 시, 오른쪽 채팅 모달 출력
+
+  <br/>
+
+## ⚙️ 설치 및 실행방법
+
+> **프로젝트 설치**
+>
+> ```
+> npm install
+> ```
+
+<br/>
+
+> **프로젝트 실행**
+>
+> ```
+> npm run dev
+> ```
+
+<br/>
+
+## 🛠️ 기술 스택
+
+<br/>
+
+<br/>
+
+## 📂 디렉토리 구조
+
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
 ```
+
+<br/>
+
+## 📌 컨벤션
+
+### 1. Commit
+
+> **기본 구조 : `[type]: 커밋 내용`**
+>
+> - 각자가 맡은 Task가 구체적으로 정리되어있어야 한다.
+> - 개발을 하다 겪은 문제들이 Github Issue로 잘 정리되어있어야 한다.
+> - 한 commit당 하나의 기능 구현만 해야한다.
+>
+> ```
+> [type]
+>
+> feat: 기능 (feature)
+> fix: 버그 수정
+> docs: 문서 작업 (documentation)
+> style: 포맷팅, 세미콜론 누락, 구분지을 타입이 없을 때 등.
+> refactor: 리팩토링 코드
+> test: 테스트
+> chore: 관리(maintain), 패키지 설치, 핵심 내용은 아닌 잡일 등
+> design: 스타일링 및 마크업
+> ```
+
+### 2. Branch
+
+> **Github-flow 전략을 기반으로 한다.**<br/>[main], [development] 브랜치와 각 기능별 [feature] 보조 브랜치를 운용
+>
+> - main : 배포 단계에서 사용하는 메인 브랜치
+> - development : 개발 단계에서 각 기능을 병합하는 브랜치
+> - feature : 기능 단위로 독립적인 개발 환경을 위해 사용하는 브랜치
+
+### 3. Pull Request, Issue
+
+> **Code Review 후 approve 상태로 전환되었을 때, 상위 브랜치로 병합한다.**<br/>**정해진 또는 알맞은 템플릿을 사용하여 양식에 맞게 작성한다.**
+
+### 4. Code, Style, Type
+
+> **Code**
+>
+> - eslint, prettier 설정을 통해 코드 컨벤션을 정한다.
+> - 정해진 규칙에 따라 자동적으로 코드 스타일을 정리하여 일관성을 유지한다.
+> - 코드 품질 관리는 eslint, 코드 포맷팅은 prettier에 일임하여 사용한다.
+> - 예외 규칙은 팀원과의 논의를 통해 정한다.
+> - 협업 시 빠르게 개발하는데에 목적을 둔다.
+>
+> **함수 정의**
+>
+> ```
+> const Sample = () => {
+>  return (
+>    <>
+>      <h1>Sample Component</h1>
+>    </>
+>  );
+> }
+> export default Sample
+> ```
+
+<br/>
+
+## ❓ FAQ
