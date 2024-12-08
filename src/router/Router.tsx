@@ -1,5 +1,6 @@
 import BasicLayout from "layouts/BasicLayout";
 import RoomLayout from "layouts/RoomLayout";
+import ChangeMyInfo from "page/ChangeMyInfo";
 import ClassRoom from "page/ClassRoom";
 import Home from "page/Home";
 import Login from "page/Login";
@@ -31,6 +32,10 @@ const Router = createBrowserRouter([
       {
         path: "mypage",
         element: <MyPage />,
+      },
+      {
+        path: "changemyinfo",
+        element: <ChangeMyInfo />,
       },
     ],
   },

@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { fbAuth, fbStore } from "config/firebase";
 import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "store/actions/useUserStore";
@@ -135,6 +135,52 @@ export const useSignUp = () => {
     onSuccess: () => {
       alert("회원가입 성공!");
       navigate("/login");
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+};
+
+const updateUserProfile = async (uid: string, name: string, phone: string, profileUrl: string | null) => {
+  try {
+    await updateDoc(doc(fbStore, "users", uid), {
+      name: name,
+      phone: phone,
+      profileUrl: profileUrl,
+    });
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      throw new Error(formatFirebaseError(error.code));
+    } else {
+      throw new Error("알 수 없는 오류가 발생했습니다.");
+    }
+  }
+};
+
+export const useUpdateProfile = () => {
+  const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+  const token = localStorage.getItem("authToken");
+  const uid = token ? getUIDFromToken(token) : null;
+  if (!uid) throw new Error("다시 로그인 해주세요");
+
+  return useMutation({
+    mutationFn: (data: { name: string; phone: string; profileUrl: string | null }) =>
+      updateUserProfile(uid, data.name, data.phone, data.profileUrl),
+    onSuccess: async () => {
+      const userData = await fetchUser(uid);
+      userData &&
+        setUser({
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          role: userData.role,
+          createdAt: userData.createdAt,
+          profileUrl: userData.profileUrl,
+        });
+      alert("프로필이 성공적으로 수정되었습니다!");
+      navigate("/mypage");
     },
     onError: (error) => {
       console.error(error);

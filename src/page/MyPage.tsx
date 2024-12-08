@@ -27,7 +27,7 @@ const MyPage = () => {
             navigate("/");
           }}
         />
-        <Button text="내 정보 수정" />
+        <Button text="내 정보 수정" onClick={() => navigate("/changemyinfo")} />
       </div>
     </div>
   );
