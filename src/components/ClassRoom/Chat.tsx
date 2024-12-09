@@ -2,33 +2,33 @@ import profile from "@assets/user1.svg";
 import ChatInput from "@components/ClassRoom/Chatting/ChatInput";
 import ChatMessage from "@components/ClassRoom/Chatting/ChatMessage";
 import type { Chat } from "@customTypes/chat";
-import { User } from "@customTypes/user";
+import { useSocket } from "hooks/useSocket";
+import { useSocketEmit } from "hooks/useSocketEmit";
+import { useSocketEvent } from "hooks/useSocketEvent";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PiChatTeardropTextFill } from "react-icons/pi";
-import io from "socket.io-client";
 import { useChatStore } from "store/actions/useChatStore";
+import { useUserStore } from "store/actions/useUserStore";
 
-const socket = io("localhost:5000");
+const URL = import.meta.env.VITE_SERVER_URL;
+const port = window.location.port;
 
 const Chat = () => {
-  const [userName, setUserName] = useState("user1");
+  const user = useUserStore((state) => state.user);
+  const userName = user?.name ?? port;
+  const profileUrl = user?.profileUrl?.length ? user.profileUrl : profile;
+
   const [isChat, setIsChat] = useState(false);
   const chatList = useChatStore((state) => state.chatList);
   const setChatList = useChatStore((state) => state.setChatList);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-  const user: User = { userName: userName, profileUrl: profile };
 
-  useEffect(() => {
-    const handleMessage = (message: Chat) => {
-      setChatList(message);
-    };
+  const { socket, isConnected } = useSocket(URL);
+  const emit = useSocketEmit(socket, isConnected);
 
-    socket.on("message", handleMessage);
-
-    return () => {
-      socket.off("message", handleMessage);
-    };
-  }, []);
+  useSocketEvent(socket, isConnected, "message", (message: Chat) => {
+    setChatList(message);
+  });
 
   // 스크롤 자동 내리기 기능
   useEffect(() => {
@@ -39,7 +39,7 @@ const Chat = () => {
 
   const sendMessage = useCallback(
     (text: string) => {
-      socket.emit("message", { user: user, text: text, time: new Date() });
+      emit("message", { user: { name: userName, profileUrl: profileUrl }, text: text, time: new Date() });
     },
     [socket, user]
   );
@@ -53,7 +53,7 @@ const Chat = () => {
         }`}>
         <ul className="flex-grow overflow-y-auto p-4">
           {chatList.map((chat, index) => (
-            <ChatMessage key={index} chat={chat} userName={userName} />
+            <ChatMessage key={index} chat={chat} name={userName} />
           ))}
           <div ref={chatEndRef} />
         </ul>
