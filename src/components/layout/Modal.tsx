@@ -6,13 +6,17 @@ const Modal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
   const clearUser = useUserStore((state) => state.clearUser);
 
   const handleNavigate = (path: string) => {
-    onClose();
-    navigate(path);
+    if (confirm("강의실을 나가겠습니까?")) {
+      onClose();
+      navigate(path);
+    }
   };
 
   const handleLogout = () => {
-    clearUser();
-    navigate("/login");
+    if (confirm("로그아웃 하시겠습니까?")) {
+      clearUser();
+      navigate("/login");
+    }
   };
 
   return (
@@ -23,14 +27,14 @@ const Modal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
       onClick={onClose}>
       <div className="mt-16 h-full w-64 space-y-4 bg-white p-4" onClick={(e) => e.stopPropagation()}>
         <button
+          onClick={() => handleNavigate("/")}
+          className="block w-full px-4 py-2 text-left text-primary hover:bg-gray-100">
+          HOME
+        </button>
+        <button
           onClick={() => handleNavigate("/mypage")}
           className="block w-full px-4 py-2 text-left text-primary hover:bg-gray-100">
           MY PAGE
-        </button>
-        <button
-          onClick={() => handleNavigate("/classroom/1")}
-          className="block w-full px-4 py-2 text-left text-primary hover:bg-gray-100">
-          MY CLASSROOM
         </button>
         <button onClick={handleLogout} className="block w-full px-4 py-2 text-left text-primary hover:bg-gray-100">
           LOGOUT

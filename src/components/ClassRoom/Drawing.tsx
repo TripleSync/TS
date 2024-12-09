@@ -7,11 +7,15 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
 import { Image, Layer, Line, Stage } from "react-konva";
 import { useDrawingStore } from "store/actions/useDrawngStore";
+import { useUserStore } from "store/actions/useUserStore";
 import ToolsContainer from "./Drawing/ToolsContainer";
 
 const URL = "http://localhost:5000";
 
 const Drawing = () => {
+  const user = useUserStore((state) => state.user);
+  const isTeacher = user?.role === "1"; // 0: student, 1: teacher
+
   const tool = useDrawingStore((state) => state.tool);
   const brushColor = useDrawingStore((state) => state.brushColor);
   const [lines, setLines] = useState<TLine[]>([]);
@@ -19,15 +23,12 @@ const Drawing = () => {
   const layerRef = useRef<Konva.Layer | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
-  const port = window.location.port;
-  const isAllowed = port === "5173"; // 학생or선생님 구분용
-
   const { socket, isConnected } = useSocket(URL);
   const emit = useSocketEmit(socket, isConnected);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
-    if (!e.target || !isAllowed) return;
+    if (!e.target || !isTeacher) return;
     const pos = e.target.getStage()?.getPointerPosition();
     if (pos) {
       const newLine = { tool, points: [pos.x, pos.y], brushColor };
@@ -37,7 +38,7 @@ const Drawing = () => {
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if (!isDrawing.current || !isAllowed) {
+    if (!isDrawing.current || !isTeacher) {
       return;
     }
     const stage = e.target.getStage();
@@ -105,7 +106,7 @@ const Drawing = () => {
   return (
     <section id="container" className="flex h-full w-max items-start justify-center">
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
-        {isAllowed && (
+        {isTeacher && (
           <>
             <input type="file" accept="image/*" onChange={handleImageUpload} />
             <ToolsContainer onClear={handleClear} />

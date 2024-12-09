@@ -4,6 +4,12 @@ import { useUserStore } from "store/actions/useUserStore";
 const Home = () => {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
+  const clearUser = useUserStore((state) => state.clearUser);
+
+  const handleLogout = () => {
+    clearUser();
+    navigate("/login");
+  };
 
   return (
     <div className="flex h-full flex-col justify-center gap-7">
@@ -22,8 +28,7 @@ const Home = () => {
             navigate("/mypage");
           }}
         />
-
-        <Button text="로그아웃" />
+        <Button text="로그아웃" onClick={handleLogout} />
       </div>
     </div>
   );
