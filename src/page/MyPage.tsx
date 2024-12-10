@@ -57,7 +57,13 @@ const MyPage = () => {
                 setIsChange((isChange) => !isChange);
               }}
             />
-            <Button text="변경" onClick={() => mutate({ name, phone, profileUrl })} />
+            <Button
+              text="변경"
+              onClick={() => {
+                mutate({ name, phone, profileUrl });
+                setIsChange(false);
+              }}
+            />
           </div>
         ) : (
           <div className="mt-5 flex justify-between">
