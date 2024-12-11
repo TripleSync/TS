@@ -7,20 +7,30 @@ const LoginInput = ({
   value,
   onChange,
   required = true,
+  disabled = false,
   id,
 }: {
   label: string;
   type: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  disabled?: boolean;
   id: string;
 }) => (
   <div className="mt-1">
     <label htmlFor={id} className="block text-sm font-medium text-gray-700">
       {label}
     </label>
-    <input type={type} id={id} value={value} onChange={onChange} className={inputStyle} required={required} />
+    <input
+      type={type}
+      disabled={disabled}
+      id={id}
+      value={value}
+      onChange={onChange}
+      className={`${inputStyle} ${disabled && "cursor-not-allowed bg-gray-200 text-gray-500"}`}
+      required={required}
+    />
   </div>
 );
 export default LoginInput;

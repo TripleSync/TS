@@ -9,13 +9,13 @@ import Router from "router/Router";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { isError, isLoading } = useFetchUserQuery();
+  const { isError, isLoading, error } = useFetchUserQuery();
 
   if (isLoading) {
     return <div></div>;
   }
   if (isError) {
-    localStorage.removeItem("authToken");
+    console.log(error);
   }
   return <RouterProvider router={Router} />;
 };
