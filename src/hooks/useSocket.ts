@@ -6,7 +6,12 @@ export const useSocket = (url: string) => {
   const socketRef = useRef<typeof Socket | null>(null);
 
   useEffect(() => {
-    const socket = io(url);
+    const socket = io(url, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+    });
     socketRef.current = socket;
 
     socket.on("connect", () => {
