@@ -1,8 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { fbAuth, fbStore } from "config/firebase";
 import { FirebaseError } from "firebase/app";
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "store/actions/useUserStore";
 
@@ -22,17 +23,46 @@ const loginUser = async (email: string, password: string) => {
   }
 };
 
-// 유저 정보 저장
-const fetchUser = async () => {
-  const user = fbAuth.currentUser;
-  if (user) {
-    const userDocRef = doc(fbStore, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-      return userData;
-    }
+const getUIDFromToken = (token: string) => {
+  try {
+    const decodedToken: { user_id: string } = jwtDecode(token);
+    return decodedToken.user_id;
+  } catch (error) {
+    console.error("토큰 디코딩 실패:", error);
+    return null;
   }
+};
+
+export const useFetchUserQuery = () => {
+  const setUser = useUserStore((state) => state.setUser);
+  const clearUser = useUserStore((state) => state.clearUser);
+  const token = localStorage.getItem("authToken");
+  const uid = token ? getUIDFromToken(token) : null;
+
+  return useQuery({
+    queryKey: [uid],
+    queryFn: async () => {
+      if (!uid) {
+        clearUser();
+        return null;
+      }
+      const data = await fetchUser(uid);
+      data && setUser(data);
+      return data;
+    },
+  });
+};
+
+// 유저 정보 저장
+const fetchUser = async (uid: string) => {
+  const userDocRef = doc(fbStore, "users", uid);
+  const userDocSnap = await getDoc(userDocRef);
+  if (userDocSnap.exists()) {
+    const userData = userDocSnap.data();
+    return userData;
+  }
+
+  return null;
 };
 
 export const useLogin = () => {
@@ -41,18 +71,21 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: { email: string; password: string }) => loginUser(data.email, data.password),
     onSuccess: async () => {
-      const userData = await fetchUser();
-      userData &&
-        setUser({
-          userName: userData.name,
-          email: userData.email,
-          phone: userData.phone,
-          nickname: userData.nickname,
-          createdAt: userData.createdAt,
-          profileUrl: userData.profileUrl,
-        });
-      alert("로그인 성공");
-      navigate("/");
+      const user = fbAuth.currentUser;
+      if (user) {
+        const userData = await fetchUser(user.uid);
+        userData &&
+          setUser({
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            role: userData.role,
+            createdAt: userData.createdAt,
+            profileUrl: userData.profileUrl,
+          });
+        alert("로그인 성공");
+        navigate("/");
+      }
     },
   });
 };
@@ -62,19 +95,18 @@ const signUpUser = async (
   email: string,
   password: string,
   phone: string,
-  nickname: string,
+  role: string,
   profileUrl: string | null
 ) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(fbAuth, email, password);
     const user = userCredential.user;
-    if (user) await sendEmailVerification(user);
 
     await setDoc(doc(fbStore, "users", user.uid), {
       name: name,
       email: email,
       phone: phone,
-      nickname: nickname,
+      role: role,
       createdAt: new Date(),
       profileUrl: profileUrl,
     });
@@ -97,12 +129,58 @@ export const useSignUp = () => {
       email: string;
       password: string;
       phone: string;
-      nickname: string;
+      role: string;
       profileUrl: string | null;
-    }) => signUpUser(data.name, data.email, data.password, data.phone, data.nickname, data.profileUrl),
+    }) => signUpUser(data.name, data.email, data.password, data.phone, data.role, data.profileUrl),
     onSuccess: () => {
       alert("회원가입 성공!");
       navigate("/login");
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+};
+
+const updateUserProfile = async (uid: string, name: string, phone: string, profileUrl: string | null) => {
+  try {
+    await updateDoc(doc(fbStore, "users", uid), {
+      name: name,
+      phone: phone,
+      profileUrl: profileUrl,
+    });
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      throw new Error(formatFirebaseError(error.code));
+    } else {
+      throw new Error("알 수 없는 오류가 발생했습니다.");
+    }
+  }
+};
+
+export const useUpdateProfile = () => {
+  const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+  const token = localStorage.getItem("authToken");
+  const uid = token ? getUIDFromToken(token) : null;
+  if (!uid) throw new Error("다시 로그인 해주세요");
+
+  return useMutation({
+    mutationFn: (data: { name: string; phone: string; profileUrl: string | null }) =>
+      updateUserProfile(uid, data.name, data.phone, data.profileUrl),
+    onSuccess: async () => {
+      const userData = await fetchUser(uid);
+      userData &&
+        setUser({
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          role: userData.role,
+          createdAt: userData.createdAt,
+          profileUrl: userData.profileUrl,
+        });
+      alert("프로필이 성공적으로 수정되었습니다!");
+      navigate("/mypage");
     },
     onError: (error) => {
       console.error(error);
