@@ -81,9 +81,14 @@ const Drawing = () => {
     }
   };
 
-  const handleClear = () => {
-    handleClearCanvas();
-    emit("clearCanvas");
+  const handleClear = (isImageTool?: boolean) => {
+    if (isImageTool) {
+      setImage(null);
+      emit("updateImage", null);
+    } else {
+      handleClearCanvas();
+      emit("clearCanvas");
+    }
   };
 
   useSocketEvent(socket, isConnected, "draw", (data: TLine) => {
@@ -91,6 +96,7 @@ const Drawing = () => {
   });
 
   useSocketEvent(socket, isConnected, "updateImage", (data: string) => {
+    console.log(data);
     const img = new window.Image();
     img.src = data;
     img.onload = () => {

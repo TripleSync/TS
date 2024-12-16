@@ -1,7 +1,7 @@
 import { FaEraser, FaPen, FaTrashAlt } from "react-icons/fa";
 import { MdImageNotSupported } from "react-icons/md";
 import { useDrawingStore } from "store/actions/useDrawngStore";
-const Tools = ({ onClear }: { onClear: () => void }) => {
+const Tools = ({ onClear }: { onClear: (isImageTool?: boolean) => void }) => {
   const tool = useDrawingStore((state) => state.tool);
   const setTool = useDrawingStore((state) => state.setTool);
 
@@ -31,7 +31,7 @@ const Tools = ({ onClear }: { onClear: () => void }) => {
           size={17}
           onClick={() => {
             if (confirm("이미지를 삭제하시겠습니까?")) {
-              onClear();
+              onClear(true);
               setTool("pen");
             }
           }}
