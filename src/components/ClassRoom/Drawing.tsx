@@ -5,6 +5,7 @@ import { useSocketEvent } from "hooks/useSocketEvent";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
+import { LuImagePlus } from "react-icons/lu";
 import { Image, Layer, Line, Stage } from "react-konva";
 import { useDrawingStore } from "store/actions/useDrawngStore";
 import { useUserStore } from "store/actions/useUserStore";
@@ -80,9 +81,14 @@ const Drawing = () => {
     }
   };
 
-  const handleClear = () => {
-    handleClearCanvas();
-    emit("clearCanvas");
+  const handleClear = (isImageTool?: boolean) => {
+    if (isImageTool) {
+      setImage(null);
+      emit("updateImage", null);
+    } else {
+      handleClearCanvas();
+      emit("clearCanvas");
+    }
   };
 
   useSocketEvent(socket, isConnected, "draw", (data: TLine) => {
@@ -90,6 +96,7 @@ const Drawing = () => {
   });
 
   useSocketEvent(socket, isConnected, "updateImage", (data: string) => {
+    console.log(data);
     const img = new window.Image();
     img.src = data;
     img.onload = () => {
@@ -108,7 +115,10 @@ const Drawing = () => {
       <div id="board" className="mx-6 flex flex-col overflow-hidden rounded-2xl border bg-primary p-5">
         {isTeacher && (
           <>
-            <input type="file" accept="image/*" onChange={handleImageUpload} />
+            <label htmlFor="img-file" className="w-fit cursor-pointer">
+              <LuImagePlus size="30" />
+            </label>
+            <input id="img-file" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             <ToolsContainer onClear={handleClear} />
           </>
         )}

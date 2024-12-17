@@ -1,12 +1,12 @@
 import { FaEraser, FaPen, FaTrashAlt } from "react-icons/fa";
+import { MdImageNotSupported } from "react-icons/md";
 import { useDrawingStore } from "store/actions/useDrawngStore";
-
-const Tools = ({ onClear }: { onClear: () => void }) => {
+const Tools = ({ onClear }: { onClear: (isImageTool?: boolean) => void }) => {
   const tool = useDrawingStore((state) => state.tool);
   const setTool = useDrawingStore((state) => state.setTool);
 
   const toolColor = "text-white";
-  const liStyle = "cursor-pointer";
+  const liStyle = "text-md cursor-pointer hover:text-white";
 
   return (
     <>
@@ -16,12 +16,22 @@ const Tools = ({ onClear }: { onClear: () => void }) => {
       <li className={`${liStyle} ${tool === "eraser" ? toolColor : ""}`}>
         <FaEraser onClick={() => setTool("eraser")} />
       </li>
-      <li>
+      <li className={liStyle}>
         <FaTrashAlt
-          className={`${liStyle} hover:text-white`}
           onClick={() => {
-            if (confirm("전체 삭제하시겠습니까?")) {
+            if (confirm("필기를 전체 삭제하시겠습니까?")) {
               onClear();
+              setTool("pen");
+            }
+          }}
+        />
+      </li>
+      <li className={liStyle}>
+        <MdImageNotSupported
+          size={17}
+          onClick={() => {
+            if (confirm("이미지를 삭제하시겠습니까?")) {
+              onClear(true);
               setTool("pen");
             }
           }}

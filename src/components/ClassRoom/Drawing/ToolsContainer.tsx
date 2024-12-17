@@ -4,7 +4,7 @@ import ColorBtn from "./ColorBtn";
 import Tools from "./Tools";
 const COLORSET: BrushColor[] = ["black", "red", "blue"];
 
-const ToolsContainer = ({ onClear }: { onClear: () => void }) => {
+const ToolsContainer = ({ onClear }: { onClear: (isImageTool?: boolean) => void }) => {
   const brushColor = useDrawingStore((state) => state.brushColor);
   const ulStyle = "flex gap-2";
 
