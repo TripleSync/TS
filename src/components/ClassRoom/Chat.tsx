@@ -2,7 +2,7 @@ import profile from "@assets/user1.svg";
 import ChatInput from "@components/ClassRoom/Chatting/ChatInput";
 import ChatMessage from "@components/ClassRoom/Chatting/ChatMessage";
 import type { Chat } from "@customTypes/chat";
-import { useSocket } from "hooks/useSocket";
+import { SocketProps } from "@customTypes/socket";
 import { useSocketEmit } from "hooks/useSocketEmit";
 import { useSocketEvent } from "hooks/useSocketEvent";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,20 +10,17 @@ import { PiChatTeardropTextFill } from "react-icons/pi";
 import { useChatStore } from "store/actions/useChatStore";
 import { useUserStore } from "store/actions/useUserStore";
 
-const URL = import.meta.env.VITE_SERVER_URL;
 const port = window.location.port;
 
-const Chat = () => {
+const Chat = ({ socket, isConnected }: SocketProps) => {
   const user = useUserStore((state) => state.user);
   const userName = user?.name ?? port;
   const profileUrl = user?.profileUrl?.length ? user.profileUrl : profile;
-
   const [isChat, setIsChat] = useState(false);
   const chatList = useChatStore((state) => state.chatList);
   const setChatList = useChatStore((state) => state.setChatList);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
-  const { socket, isConnected } = useSocket(URL);
   const emit = useSocketEmit(socket, isConnected);
 
   useSocketEvent(socket, isConnected, "message", (message: Chat) => {

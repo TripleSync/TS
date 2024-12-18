@@ -8,26 +8,31 @@ const io = require("socket.io")(server, {
 
 let currentImg = null;
 let currentLines = [];
+const users = {};
 app.use(express.static(__dirname + "'../dist'"));
 
 io.on("connection", (socket) => {
-  if (currentImg) {
-    console.log("Sending current image to new user");
-    socket.broadcast.emit("updateImage", currentImg);
-  }
-  if (currentLines.length > 0) {
-    socket.broadcast.emit("initializeLines", currentLines);
-  }
+  console.log(`A user connected: ${socket.id}`);
 
-  socket.on("message", (message) => {
-    io.emit("message", message);
+  socket.on("initialize", (data) => {
+    const { name, roomId } = data;
+
+    users[socket.id] = { name, roomId };
+    socket.join(roomId);
+    console.log("Rooms the socket is in now:", socket.rooms);
+    // if (currentImg) {
+    //   console.log("Sending current image to new user");
+    //   socket.broadcast.emit("updateImage", currentImg);
+    // }
+    // if (currentLines.length > 0) {
+    //   socket.broadcast.emit("initializeLines", currentLines);
+    // }
   });
 
   // 강의실 입장
-  socket.on("joinRoom", (data) => {
+  socket.on("join_room", (data) => {
     socket.join(data.roomId);
     const room = io.sockets.adapter.rooms.get(data.roomId);
-
     if (room.size === 1) {
       console.log("강의실에 1명이 입장하였습니다.");
     } else if (room.size === 2) {
@@ -36,6 +41,13 @@ io.on("connection", (socket) => {
     } else {
       console.log("해당 강의실은 만석입니다.");
       socket.emit("fullRoom", data.roomId);
+    }
+  });
+
+  socket.on("message", (message) => {
+    const user = users[socket.id];
+    if (user && user.roomId) {
+      io.to(user.roomId).emit("message", message);
     }
   });
 
@@ -56,27 +68,33 @@ io.on("connection", (socket) => {
 
   // 강의실 퇴장
   socket.on("disconnect", () => {
-    const rooms = Array.from(socket.rooms);
-    rooms.forEach((roomId) => {
-      socket.to(roomId).emit("userDisconnect");
-      console.log("유저가 강의실에서 퇴장하였습니다.");
-    });
+    console.log(`User disconnected: ${socket.id}`);
   });
+
   // 필기 좌표 전송
   socket.on("draw", (data) => {
-    currentLines.push(data);
-    socket.broadcast.emit("draw", data); // 다른 클라이언트에게 필기 좌표 전송
+    // currentLines.push(data);
+    const user = users[socket.id];
+    if (user && user.roomId) {
+      socket.broadcast.to(user.roomId).emit("draw", data);
+    }
   });
 
   socket.on("clearCanvas", () => {
-    currentLines = [];
-    io.emit("clearCanvas");
+    // currentLines = [];
+    const user = users[socket.id];
+    if (user && user.roomId) {
+      socket.broadcast.to(user.roomId).emit("clearCanvas", data);
+    }
   });
 
   // 이미지 업데이트 전송
   socket.on("updateImage", (data) => {
-    currentImg = data;
-    socket.broadcast.emit("updateImage", data); // 다른 클라이언트에게 이미지 업데이트 전송
+    // currentImg = data;
+    const user = users[socket.id];
+    if (user && user.roomId) {
+      socket.broadcast.to(user.roomId).emit("updateImage", data);
+    }
   });
 });
 

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
-export const useSocket = (url: string) => {
+export const useSocket = (url: string, roomId: string | undefined, name: string | undefined) => {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<typeof Socket | null>(null);
 
   useEffect(() => {
+    if (!roomId) return;
+
     const socket = io(url, {
       reconnection: true,
       reconnectionAttempts: 5,
@@ -16,6 +18,8 @@ export const useSocket = (url: string) => {
 
     socket.on("connect", () => {
       setIsConnected(true);
+      socket.emit("initialize", { name: name, roomId: roomId });
+      console.log(`Joined room ${roomId}`);
     });
     socket.on("disconnect", () => {
       setIsConnected(false);
@@ -24,7 +28,7 @@ export const useSocket = (url: string) => {
     return () => {
       socket.disconnect();
     };
-  }, [url]);
+  }, [url, roomId]);
 
   return { socket: socketRef.current, isConnected };
 };
