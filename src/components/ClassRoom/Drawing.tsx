@@ -1,5 +1,5 @@
 import { TLine } from "@customTypes/drawing";
-import { useSocket } from "hooks/useSocket";
+import { SocketProps } from "@customTypes/socket";
 import { useSocketEmit } from "hooks/useSocketEmit";
 import { useSocketEvent } from "hooks/useSocketEvent";
 import Konva from "konva";
@@ -11,12 +11,9 @@ import { useDrawingStore } from "store/actions/useDrawngStore";
 import { useUserStore } from "store/actions/useUserStore";
 import ToolsContainer from "./Drawing/ToolsContainer";
 
-const URL = "http://localhost:5000";
-
-const Drawing = () => {
+const Drawing = ({ socket, isConnected }: SocketProps) => {
   const user = useUserStore((state) => state.user);
   const isTeacher = user?.role === "1"; // 0: student, 1: teacher
-
   const tool = useDrawingStore((state) => state.tool);
   const brushColor = useDrawingStore((state) => state.brushColor);
   const [lines, setLines] = useState<TLine[]>([]);
@@ -24,7 +21,6 @@ const Drawing = () => {
   const layerRef = useRef<Konva.Layer | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
-  const { socket, isConnected } = useSocket(URL);
   const emit = useSocketEmit(socket, isConnected);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
